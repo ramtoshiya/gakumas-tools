@@ -1,4 +1,5 @@
 import { S } from "../constants";
+import { recordRand, rewindRand, stopRecordingRand } from "../utils";
 import BaseStrategy from "./BaseStrategy";
 
 export class HoldSelectionRequest extends Error {
@@ -70,6 +71,7 @@ export default class ManualStrategy extends BaseStrategy {
   }
 
   async evaluate(state) {
+    stopRecordingRand();
     this.answers = [];
     this.answerCursor = 0;
     const handLog = this.engine.logger.log(state, "hand", null);
@@ -97,6 +99,8 @@ export default class ManualStrategy extends BaseStrategy {
       usableCards,
     });
 
+    // Selection prompts replay this use with the draws it made.
+    recordRand();
     return { card: selectedCard };
   }
 
@@ -146,7 +150,9 @@ export default class ManualStrategy extends BaseStrategy {
     this.answers.push(selectedIndices);
 
     this.answerCursor = 0;
+    rewindRand();
     const nextState = this.engine.executeDecision(state, decision);
+    stopRecordingRand();
     this.answers = [];
     this.answerCursor = 0;
     return nextState;

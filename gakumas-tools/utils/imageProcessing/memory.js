@@ -9,7 +9,9 @@ import {
   loadImageFromFile,
   extractLines,
 } from "./common";
+import DIGIT_TEMPLATES from "./contestLoadoutDigits.json";
 import { classifyCrops, ICON_SIZE } from "./entityClassifier";
+import { readNumber, segmentGlyphs } from "./glyphs";
 import {
   getPItemBoundingBoxes,
   getSkillCardBoundingBoxes,
@@ -46,8 +48,11 @@ export async function getMemoryFromFile(
 
   const powerCandidates = extractPower(engWhiteResult);
   const blackLines = extractLines(engBlackResult);
-  const paramsLineIndex = blackLines.findIndex(({ text }) =>
-    PARAMS_REGEXP.test(text)
+  const imageData = getImageData(img);
+  const { index: paramsLineIndex, params } = findParams(
+    blackLines,
+    imageData,
+    img.width
   );
   const paramsLine = blackLines[paramsLineIndex];
   const pItemsLabelLine = blackLines[paramsLineIndex + 1];
@@ -80,7 +85,6 @@ export async function getMemoryFromFile(
     ]);
   }
 
-  const params = extractParams(paramsLine);
   const pItems = await extractEntities(
     img,
     pItemBoxes,
@@ -94,7 +98,6 @@ export async function getMemoryFromFile(
     skillCardClasses
   );
 
-  const imageData = getImageData(img);
   const customizations = skillCards.map((id, i) =>
     readCustomizations(imageData, skillCardBoxes[i], MEMORY_LAYOUT, id)
   );
@@ -161,11 +164,97 @@ export function extractPower(result) {
 }
 
 // Read Vo, Da, Vi, stamina from line
-export function extractParams(line) {
-  return (line.text.match(/\d+/g) || []).map((t) => parseInt(t, 10));
+export function extractParams(line, width) {
+  if (PARAMS_REGEXP.test(line.text)) {
+    return line.text.match(/\d+/g).map((t) => parseInt(t, 10));
+  }
+  return (paramWords(line, width) || []).map((word) => parseInt(word.text, 10));
 }
 
-export async function extractEntities(img, boxes, session, classes) {
+// Find the Vo/Da/Vi/stamina line: a line of four numbers, then one with a
+// number in each column, then, loosely, one with a digit in each column.
+export function findParams(lines, imageData, width) {
+  const passes = [
+    (line) =>
+      PARAMS_REGEXP.test(line.text) ? readParams(imageData, line, width) : [],
+    (line) => readParams(imageData, line, width),
+    (line) => readParams(imageData, line, width, true),
+  ];
+  for (const pass of passes) {
+    for (let index = 0; index < lines.length; index++) {
+      const params = pass(lines[index]);
+      if (params.length === 4) return { index, params };
+    }
+  }
+  return { index: -1, params: [] };
+}
+
+// The OCR words holding Vo, Da, Vi, stamina, or null if a column is missing.
+// Loosely, any word with a digit counts, since in small screenshots OCR
+// glues stray marks and the next column's rank badge onto a value. Such a
+// word is cut short of that badge.
+function paramWords(line, width, loose = false) {
+  const numbers = (line.words || []).filter((word) =>
+    (loose ? /\d/ : /^\d+$/).test(word.text.trim())
+  );
+  if (!loose && PARAMS_REGEXP.test(line.text) && numbers.length === 4) {
+    return numbers;
+  }
+  if (!width) return null;
+
+  // Rank icons sit left of the values in the first three columns.
+  const words = Array(4).fill(null);
+  for (const word of numbers) {
+    const column = Math.floor((word.bbox.x0 / width) * 4);
+    if (column < 3 && word.bbox.x1 < ((column + 0.6) * width) / 4) {
+      continue;
+    }
+    words[column] = loose
+      ? {
+          ...word,
+          bbox: {
+            ...word.bbox,
+            x1: Math.min(word.bbox.x1, ((column + 1.1) * width) / 4),
+          },
+        }
+      : word;
+  }
+  return words.every((word) => word !== null) ? words : null;
+}
+
+const isParamInk = (r, g, b) =>
+  Math.max(r, g, b) < 110 && Math.max(r, g, b) - Math.min(r, g, b) < 30;
+
+// OCR misreads small numerals (Vo 65 as 85 in a 540 px wide screenshot), so
+// each value is reread from its glyphs inside the OCR word's box. A rank
+// badge merged into the word sits left of the value, so only the rightmost
+// run of glyphs is read. Loose words have no OCR number to fall back on, so
+// they read only if every value's glyphs do.
+export function readParams(imageData, line, width, loose = false) {
+  const words = paramWords(line, width, loose);
+  if (!words) return loose ? [] : extractParams(line, width);
+  const pad = Math.ceil((line.bbox.y1 - line.bbox.y0) * 0.15);
+  const params = words.map((word) => {
+    const value = readNumber(
+      segmentGlyphs(
+        imageData,
+        {
+          x0: Math.max(0, word.bbox.x0 - pad),
+          x1: Math.min(imageData.width, word.bbox.x1 + pad),
+          y0: Math.max(0, line.bbox.y0 - pad),
+          y1: Math.min(imageData.height, line.bbox.y1 + pad),
+        },
+        isParamInk,
+        true
+      ),
+      DIGIT_TEMPLATES.value
+    );
+    return Number.isInteger(value) || loose ? value : parseInt(word.text, 10);
+  });
+  return params.every(Number.isInteger) ? params : [];
+}
+
+export async function extractEntities(img, boxes, session, classes, allowed) {
   const canvas = document.createElement("canvas");
   canvas.width = ICON_SIZE;
   canvas.height = ICON_SIZE;
@@ -190,7 +279,7 @@ export async function extractEntities(img, boxes, session, classes) {
     return ctx.getImageData(0, 0, ICON_SIZE, ICON_SIZE).data;
   });
 
-  return classifyCrops(ort, session, classes, crops, 4);
+  return classifyCrops(ort, session, classes, crops, 4, allowed);
 }
 
 function downloadCrop(canvas, i) {

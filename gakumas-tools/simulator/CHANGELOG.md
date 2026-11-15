@@ -12,10 +12,50 @@ All notable changes to the contest simulator will be documented in this file.
 
 
 
+
+
+
+## 2026-11-14
+
+- Add agitato saki portrait
+- Add sugar flavor rinami portrait
+
+## 2026-11-12
+
+- Add gamushara ni ikou kotone portrait
+- Add veil misuzu portrait
+
+## 2026-11-11
+
+- Add uijin misuzu portrait
+- Add garakutaroad misuzu portrait
+- Add agitato ume portrait
+- Add garakutaroad sena portrait
+- Add nee icchauyo misuzu portrait
+- Add garakutaroad china portrait
+- Add garakutaroad saki portrait
+- Add shirube mao portrait
+
+## 2026-11-10
+
+- Add gakuen seikatsu tsubame portrait
+- Add kanae episode0 support item
+- Add wildest flower saki portrait
+
+## 2026-11-09
+
+- Add me hiro and garakutaroad tsubame portraits
+- Add shoshi kantetsu tsubame portrait
+
+## 2026-11-07
+
+- Add garakutaroad support item icons
+
 ## 2026-11-06
 
 - Update garakutaroad china and misuzu
 - Add garakutaroad support item
+- Fix break-time snack score rounding
 
 ## 2026-11-02
 

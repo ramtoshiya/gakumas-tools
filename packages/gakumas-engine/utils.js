@@ -37,11 +37,35 @@ function nextRandom(state) {
 
 let _getRand = DEBUG ? mulberry32(seed) : nextRandom;
 let _getRandCount = 0;
+let _randTape = null;
+let _randTapePos = 0;
 
 export function getRand(state) {
   // console.log((new Error()).stack?.split("\n")[2]?.trim());//.split(" ")[1]);
   _getRandCount++;
+  if (_randTape) {
+    if (_randTapePos < _randTape.length) return _randTape[_randTapePos++];
+    const value = _getRand();
+    _randTape.push(value);
+    _randTapePos++;
+    return value;
+  }
   return _getRand(state);
+}
+
+// Record the draws from here on, so a card use replayed from the start rolls
+// what it rolled before.
+export function recordRand() {
+  _randTape = [];
+  _randTapePos = 0;
+}
+
+export function rewindRand() {
+  _randTapePos = 0;
+}
+
+export function stopRecordingRand() {
+  _randTape = null;
 }
 
 export function getRandCallCount() {
@@ -91,6 +115,7 @@ export function flipRandomBuffer(state) {
 export function resetRand(customSeed) {
   _getRand = mulberry32(customSeed ?? seed);
   _getRandCount = 0;
+  _randTape = null;
 }
 
 export function shuffle(arr, state) {
@@ -168,6 +193,10 @@ export function deepCopy(state) {
     }
   }
   return out;
+}
+
+export function isUniqueCard(card) {
+  return card.unique && !["L", "T"].includes(card.rarity);
 }
 
 export function getBaseId(entity) {

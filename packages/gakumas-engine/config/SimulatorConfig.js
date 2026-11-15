@@ -1,4 +1,4 @@
-import { StrategyCustomizations } from "gakumas-data";
+import { StrategyCustomizations } from "gakumas-loadout";
 
 export default class SimulatorConfig {
   constructor(loadout, listenerConfig) {

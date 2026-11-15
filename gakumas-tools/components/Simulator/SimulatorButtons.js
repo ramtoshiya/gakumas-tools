@@ -13,6 +13,7 @@ import {
   FaShareNodes,
 } from "react-icons/fa6";
 import { Stages } from "gakumas-data";
+import { loadoutFromSearchParams, loadoutsFromSearchParams } from "gakumas-loadout";
 import Button from "@/components/Button";
 import ConfirmModal from "@/components/ConfirmModal";
 import ModalLoading from "@/components/Modal/ModalLoading";
@@ -20,7 +21,6 @@ import LoadoutsModal from "@/components/SimulationRuns/LoadoutsModal";
 import ShareModal from "@/components/ShareModal";
 import LoadoutContext from "@/contexts/LoadoutContext";
 import ModalContext from "@/contexts/ModalContext";
-import { loadoutFromSearchParams, loadoutsFromSearchParams } from "@/utils/simulator";
 import styles from "./Simulator.module.scss";
 
 const SimulatorLoadoutImporterModal = dynamic(

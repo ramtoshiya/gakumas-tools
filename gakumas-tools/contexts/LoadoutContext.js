@@ -9,21 +9,25 @@ import {
   useState,
 } from "react";
 import { STARTING_EFFECTS } from "gakumas-engine/constants";
-import { Stages, StrategyCustomizations } from "gakumas-data";
-import { usePathname } from "@/i18n/routing";
-import LoadoutUrlContext from "@/contexts/LoadoutUrlContext";
-import WorkspaceContext from "@/contexts/WorkspaceContext";
+import { Stages } from "gakumas-data";
 import {
+  fixCustomizationGroups,
   getDefaultParams,
   getSimulatorUrl,
   getStage,
   knownStageId,
-} from "@/utils/simulator";
-import { setMemorySlot } from "@/utils/memorySlots";
+  deserializeIds,
+  StrategyCustomizations,
+  DEFAULTS,
+} from "gakumas-loadout";
+import { usePathname } from "@/i18n/routing";
+import LoadoutUrlContext from "@/contexts/LoadoutUrlContext";
+import WorkspaceContext from "@/contexts/WorkspaceContext";
+import {
+  getMemorySlotCustomizations,
+  setMemorySlot,
+} from "@/utils/memorySlots";
 import { synchronizeLinkLoadouts } from "@/utils/linkLoadouts";
-import { fixCustomizationGroups } from "@/utils/customizations";
-import { DEFAULTS } from "@/utils/simulator";
-import { deserializeIds } from "@/utils/ids";
 import { inferPIdolId, getExamStage } from "@/utils/exams";
 import { getIdolRoadStage } from "@/utils/idolRoad";
 
@@ -885,7 +889,7 @@ export function LoadoutContextProvider({ children }) {
     });
     setCustomizationGroups((cur) => {
       const next = [...cur];
-      next[index] = memory.customizations || [];
+      next[index] = getMemorySlotCustomizations(memory);
       return next;
     });
   }, []);

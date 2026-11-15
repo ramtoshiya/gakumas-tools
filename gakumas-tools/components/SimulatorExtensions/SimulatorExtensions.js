@@ -6,7 +6,7 @@ import {
   FaRegPaste,
   FaRegTrashCan,
 } from "react-icons/fa6";
-import { StrategyCustomizations } from "gakumas-data";
+import { loadoutFromSearchParams, loadoutsFromSearchParams, StrategyCustomizations } from "gakumas-loadout";
 import Button from "@/components/Button";
 import Collapse from "@/components/Collapse";
 import ConfirmModal from "@/components/ConfirmModal";
@@ -17,7 +17,6 @@ import SwapDndContext from "@/components/LoadoutEditor/SwapDndContext";
 import LoadoutContext from "@/contexts/LoadoutContext";
 import ModalContext from "@/contexts/ModalContext";
 import { EntityTypes } from "@/utils/entities";
-import { loadoutFromSearchParams, loadoutsFromSearchParams } from "@/utils/simulator";
 import EntityPickerModal from "../EntityPickerModal";
 import styles from "./SimulatorExtensions.module.scss";
 
