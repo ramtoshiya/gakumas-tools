@@ -194,6 +194,7 @@ export default class CardManager extends EngineComponent {
       holdSelectedUpto: (state, targetRule, num = 1) =>
         this.holdSelectedByTarget(state, targetRule, parseInt(num, 10), true),
       moveHeldCardsToHand: (state) => this.moveHeldCardsToHand(state),
+      moveHeldCardsToHandAction: (state) => this.moveHeldCardsToHand(state, true),
       useRandomCardFree: (state, targetRule) =>
         this.useRandomCardFree(state, targetRule),
       useAllCardsFree: (state, targetRule) =>
@@ -1225,7 +1226,7 @@ export default class CardManager extends EngineComponent {
     state[S.thisCardHeld] = true;
   }
 
-  moveHeldCardsToHand(state) {
+  moveHeldCardsToHand(state, moveToTopOfDeck = false) {
     const movedCards = [];
     while (state[S.heldCards].length && state[S.handCards].length < 5) {
       const card = state[S.heldCards].shift();
@@ -1243,6 +1244,20 @@ export default class CardManager extends EngineComponent {
         type: "skillCard",
         id: state[S.cardMap][card].id,
       });
+    }
+    if (moveToTopOfDeck) {
+      const movedToTopOfDeckCards = [];
+      while (state[S.heldCards].length) {
+        const card = state[S.heldCards].shift();
+        state[S.deckCards].push(card);
+        movedToTopOfDeckCards.push(card);
+      }
+      for (const card of movedToTopOfDeckCards) {
+        this.logger.log(state, "moveCardToTopOfDeck", {
+          type: "skillCard",
+          id: state[S.cardMap][card].id,
+        });
+      }
     }
   }
 
