@@ -510,15 +510,15 @@ id,name,rarity,upgraded,plan,mode,sourceType,pIdolId,welfare,effects
 509,星々を統べる輝き+,SSR,TRUE,logic,stage,pIdol,163,FALSE,"at:goodImpressionTurnsIncreased { if:isDirectEffect { effectCounter+=1; if:effectCounter%4==3 { setGoodImpressionTurnsTimesBuff(1,2); setGoodImpressionTurnsEffectBuff(0.1,2) } } }"
 510,過激め？チョイス,SSR,FALSE,logic,produce,support,,FALSE,
 511,仲良しアルバム,SSR,FALSE,sense,produce,support,,TRUE,
-512,,R,FALSE,sense,stage,pIdol,164,FALSE,
-513,,R,TRUE,sense,stage,pIdol,164,FALSE,
-514,お返しの髪飾り,SR,FALSE,sense,stage,pIdol,165,FALSE,at:endOfTurn { if:turnsRemaining<=2 { score+=5 }; limit:2 }
-515,お返しの髪飾り+,SR,TRUE,sense,stage,pIdol,165,FALSE,at:endOfTurn { if:turnsRemaining<=2 { score+=5 }; limit:2 }
-516,なにかが変わる予感,SSR,FALSE,sense,stage,pIdol,166,FALSE,at:startOfStage { setMetamorphose(prepare); concentraton+=1; goodConditionTurns+=1; limit:1 }
-517,なにかが変わる予感+,SSR,TRUE,sense,stage,pIdol,166,FALSE,at:startOfStage { setMetamorphose(prepare); concentraton+=1; goodConditionTurns+=1; limit:1 }
-518,乖離する美学,SSR,FALSE,sense,stage,pIdol,167,FALSE,at:mentalCardUsed { if:concentration>=13 { effectCounter+=1; if:effectCounter%3==2 { concentration+=6; genki+=5; limit:3 } } }
-519,乖離する美学+,SSR,TRUE,sense,stage,pIdol,167,FALSE,at:mentalCardUsed { if:concentration>=13 { effectCounter+=1; if:effectCounter%3==2 { concentration+=6; genki+=5; limit:3 } } }
-520,轟く名前,SSR,FALSE,anomaly,stage,pIdol,168,FALSE,at:afterCardUsed { if:fullPowerTimes>=1 & cardHasEffect(strength) { effectCounter+=1; if:effectCounter%3==2 { setStance(preservation2); setStrengthEffectBuff(0.3); genki+=14; limit:2 } } }
-521,轟く名前+,SSR,TRUE,anomaly,stage,pIdol,168,FALSE,at:afterCardUsed { if:fullPowerTimes>=1 & cardHasEffect(strength) { effectCounter+=1; if:effectCounter%3==2 { setStance(preservation2); setStrengthEffectBuff(0.3); genki+=14; limit:2 } } }
-522,お嬢様おでかけセット,SSR,FALSE,sense,produce,support,,FALSE,
-523,お掃除の成果,SR,FALSE,sense,produce,support,,FALSE,
+512,なにかが変わる予感,SSR,FALSE,sense,stage,pIdol,164,FALSE,
+513,なにかが変わる予感+,SSR,TRUE,sense,stage,pIdol,164,FALSE,"at:afterStartOfStage { setMetamorphosis; concentration+=1; goodConditionTurns+=1; limit:1 }"
+514,お返しの髪飾り,SR,FALSE,sense,stage,pIdol,165,FALSE,
+515,お返しの髪飾り+,SR,TRUE,sense,stage,pIdol,165,FALSE,"at:endOfTurn { if:turnsRemaining<=2 { score+=5 }; limit:2 }"
+516,お嬢様おでかけセット,SSR,FALSE,sense,produce,support,,FALSE,
+517,お掃除の成果,SR,FALSE,sense,produce,support,,FALSE,
+518,,R,FALSE,sense,stage,pIdol,166,FALSE,
+519,,R,TRUE,sense,stage,pIdol,166,FALSE,
+520,乖離する美学,SSR,FALSE,sense,stage,pIdol,167,FALSE,
+521,乖離する美学+,SSR,TRUE,sense,stage,pIdol,167,FALSE,at:mentalCardUsed { if:concentration>=13 { effectCounter+=1; if:effectCounter%3==2 { concentration+=6; genki+=5; limit:3 } } }
+522,轟く名前,SSR,FALSE,anomaly,stage,pIdol,168,FALSE,
+523,轟く名前+,SSR,TRUE,anomaly,stage,pIdol,168,FALSE,at:afterCardUsed { if:fullPowerTimes>=1 & cardHasEffect(strength) { effectCounter+=1; if:effectCounter%3==2 { setStance(preservation2); setStrengthEffectBuff(0.3); genki+=14; limit:2 } } }
